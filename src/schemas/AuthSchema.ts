@@ -9,7 +9,7 @@ const AuthSchema = Joi.object({
     'any.required': MessageEnum.REQUIRED_EMAIL,
   }),
   password: Joi.string().regex(PASSWORD_REGEX).required().messages({
-    'string.pattern.base': MessageEnum.INVALID_PASSWORD,
+    'string.pattern.base': MessageEnum.INVALID_PASSWORD_FORMAT,
     'any.required': MessageEnum.REQUIRED_PASSWORD,
   }),
 });

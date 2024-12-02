@@ -14,7 +14,9 @@ enum BASE_URL {
 enum TEST_DATA {
   TEST1 = 'test1@email.com',
   TEST2 = 'test2@email.com',
+  TEST3 = 'XXXXXXXXXXXXXXX',
   PASSWORD1 = 'QWERTY!1',
+  PASSWORD2 = 'XXXXXXXX',
 }
 
 let mongoServer: MongoMemoryServer;
@@ -70,6 +72,14 @@ afterEach(async () => {
   }
 });
 
+beforeEach(async () => {
+  // Create initial test user
+  await User.create({
+    email: TEST_DATA.TEST2,
+    password: TEST_DATA.PASSWORD1,
+  });
+});
+
 describe('Auth API', () => {
   describe('POST /app/auth/sign-up', () => {
     interface SignUpPayload {
@@ -119,6 +129,50 @@ describe('Auth API', () => {
         message: MessageEnum.REQUIRED_EMAIL,
         status: 'error',
         code: HttpStatusCode.BAD_REQUEST,
+      });
+    });
+
+    it('should return 400 for invalid email format', async () => {
+      const response = makeSignUpRequest({
+        email: TEST_DATA.TEST3,
+        password: TEST_DATA.PASSWORD1,
+      });
+
+      const res = await response;
+      expect(res.status).toBe(HttpStatusCode.BAD_REQUEST);
+      expect(res.body).toMatchObject({
+        message: MessageEnum.INVALID_EMAIL_FORMAT,
+        status: 'error',
+        code: HttpStatusCode.BAD_REQUEST,
+      });
+    });
+
+    it('should return 400 for invalid password format', async () => {
+      const response = makeSignUpRequest({
+        email: TEST_DATA.TEST1,
+        password: TEST_DATA.PASSWORD2,
+      });
+
+      const res = await response;
+      expect(res.status).toBe(HttpStatusCode.BAD_REQUEST);
+      expect(res.body).toMatchObject({
+        message: MessageEnum.INVALID_PASSWORD_FORMAT,
+        status: 'error',
+        code: HttpStatusCode.BAD_REQUEST,
+      });
+    });
+
+    it('should return 409 for Conflict detected', async () => {
+      const response = await makeSignUpRequest({
+        email: TEST_DATA.TEST2,
+        password: TEST_DATA.PASSWORD1,
+      });
+
+      expect(response.status).toBe(HttpStatusCode.CONFLICT);
+      expect(response.body).toMatchObject({
+        message: MessageEnum.CONFLICT,
+        status: 'error',
+        code: HttpStatusCode.CONFLICT,
       });
     });
   });
