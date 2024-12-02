@@ -1,33 +1,41 @@
 import express, { json, Request, Response, NextFunction } from 'express';
+import * as mongoose from 'mongoose';
 import cors from 'cors';
-import dotenv from 'dotenv';
 import helmet from 'helmet';
 import morgan from 'morgan';
 
 import { router } from './routes/index.ts';
+import { config } from './config/config.ts';
+import { ApiError } from './errors/api.error.ts';
+import { errorMiddleware } from './middlewares/error.middleware.ts';
+import { MessageEnum } from './enums/enums.ts';
 
-dotenv.config();
-
-const server = express();
+export const server = express();
 
 server.use(cors());
 server.use(json());
 server.use(helmet());
 server.use(morgan('dev'));
 
-server.use('/', router);
+server.use('/app', router);
 
-server.use('*', (_req: Request, res: Response) => {
-  res.status(404).json({ message: 'Page not found' });
+server.use('*', (_req: Request, _res: Response, next: NextFunction) => {
+  next(ApiError.notFound(MessageEnum.NOT_FOUND));
 });
 
-server.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
-  console.error(err.stack);
-  res
-    .status(500)
-    .json({ error: 'Internal server error', message: err.message });
-});
+server.use(errorMiddleware);
 
-server.listen(process.env.PORT, () => {
-  console.log('Server start on port ' + process.env.PORT);
-});
+if (require.main === module) {
+  server.listen(config.APP_PORT, async () => {
+    if (process.env.NODE_ENV !== 'test') {
+      mongoose
+        .connect(process.env.MONGODB_URI!)
+        .then(() => {
+          console.log('Connected to MongoDB');
+        })
+        .catch((error) => {
+          console.error('MongoDB connection error:', error);
+        });
+    }
+  });
+}

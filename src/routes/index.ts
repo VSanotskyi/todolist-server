@@ -1,16 +1,17 @@
 import { Router, Request, Response, NextFunction } from 'express';
 
-import { route as authRoute } from './auth.ts';
+import { authRoute } from './auth.route.ts';
+import { ApiError } from '../errors/api.error.ts';
 
 const router = Router();
 
-router.use('/app', authRoute);
+router.use('/auth', authRoute);
 
 router.get('/error', (_req: Request, _res: Response, next: NextFunction) => {
   try {
     throw new Error('Error message');
   } catch (err) {
-    next(err);
+    next(ApiError.badRequest('Bad request'));
   }
 });
 
