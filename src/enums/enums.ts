@@ -13,6 +13,11 @@ export enum HttpStatusCode {
   INTERNAL_SERVER_ERROR = 500,
 }
 
+export enum Status {
+  SUCCESS = 'success',
+  ERROR = 'error',
+}
+
 export enum MessageEnum {
   USER_CREATED = 'User has been successfully created.',
   USER_UPDATED = 'User has been successfully updated.',

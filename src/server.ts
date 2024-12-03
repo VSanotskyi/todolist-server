@@ -25,17 +25,16 @@ server.use('*', (_req: Request, _res: Response, next: NextFunction) => {
 
 server.use(errorMiddleware);
 
-if (require.main === module) {
+if (process.env.NODE_ENV !== 'test') {
   server.listen(config.APP_PORT, async () => {
-    if (process.env.NODE_ENV !== 'test') {
-      mongoose
-        .connect(process.env.MONGODB_URI!)
-        .then(() => {
-          console.log('Connected to MongoDB');
-        })
-        .catch((error) => {
-          console.error('MongoDB connection error:', error);
-        });
-    }
+    mongoose
+      .connect(config.MONGO_URL!)
+      .then(() => {
+        console.log(`Server running. Use our API on port: ${config.APP_PORT}`);
+        console.log('Connected to MongoDB');
+      })
+      .catch((error) => {
+        console.error('MongoDB connection error:', error);
+      });
   });
 }

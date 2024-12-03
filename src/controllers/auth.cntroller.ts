@@ -5,7 +5,7 @@ import { authService } from '../services/auth.service.ts';
 import { ctrlWrapper } from './ctrl.wrapper.ts';
 import { ISignInReq, ISignUpReq } from '../interfaces/auth.interface.ts';
 import { SuccessMessages } from '../constants/enum.ts';
-import { HttpStatusCode, MessageEnum } from '../enums/enums.ts';
+import { HttpStatusCode, MessageEnum, Status } from '../enums/enums.ts';
 
 const signUp = async (req: Request, res: Response, next: NextFunction) => {
   const body = req.body as ISignUpReq;
@@ -16,7 +16,12 @@ const signUp = async (req: Request, res: Response, next: NextFunction) => {
 
   const user = await authService.signUp(body);
 
-  res.status(201).json({ user, message: SuccessMessages.USER_CREATED });
+  res.status(201).json({
+    user,
+    message: SuccessMessages.USER_CREATED,
+    code: HttpStatusCode.CREATED,
+    status: Status.SUCCESS,
+  });
 };
 
 const signIn = async (req: Request, res: Response, next: NextFunction) => {
@@ -29,9 +34,10 @@ const signIn = async (req: Request, res: Response, next: NextFunction) => {
   const user = await authService.signIn(body);
 
   res.status(200).json({
-    user,
-    message: SuccessMessages.LOGIN_SUCCESS,
     code: HttpStatusCode.OK,
+    status: Status.SUCCESS,
+    message: SuccessMessages.LOGIN_SUCCESS,
+    user,
   });
 };
 

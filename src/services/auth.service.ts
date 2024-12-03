@@ -45,7 +45,9 @@ const signUp = async (dto: ISignUpReq): Promise<ISignUpRes> => {
 };
 
 const signIn = async (dto: ISignInReq): Promise<ISignInRes> => {
-  const user = await userRepository.getUserByEmail(dto.email);
+  const normalizeEmail = emailFormat(dto.email);
+
+  const user = await userRepository.getUserByEmail(normalizeEmail);
 
   if (!user) {
     throw ApiError.badRequest(MessageEnum.INVALID_CREDENTIALS_MESSAGE);
