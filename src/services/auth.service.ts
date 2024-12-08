@@ -1,17 +1,17 @@
-import { ApiError } from '../errors/api.error.ts';
+import { ApiError } from '../errors/api.error';
 import {
   comparePasswordService,
   hashPasswordService,
-} from './password.service.ts';
-import { userRepository } from '../repositories/user.repositorie.ts';
+} from './password.service';
+import { userRepository } from '../repositories/user.repositorie';
 import {
   ISignInReq,
   ISignInRes,
   ISignUpReq,
   ISignUpRes,
-} from '../interfaces/auth.interface.ts';
-import { tokenService } from './token.service.ts';
-import { MessageEnum } from '../enums/enums.ts';
+} from '../interfaces/auth.interface';
+import { tokenService } from './token.service';
+import { MessageEnum } from '../enums/enums';
 
 const isEmailExist = async (email: string): Promise<void> => {
   const res = await userRepository.getUserByEmail(email);

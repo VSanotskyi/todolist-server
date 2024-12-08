@@ -1,7 +1,7 @@
 import jsonwebtoken from 'jsonwebtoken';
 
-import { IToken, ITokenPayload } from '../interfaces/token.interface.ts';
-import { config } from '../config/config.ts';
+import { IToken, ITokenPayload } from '../interfaces/token.interface';
+import { config } from '../config/config';
 
 const generateToken = (payload: ITokenPayload): IToken => {
   const token = jsonwebtoken.sign(payload, config.JWT_TOKEN_SECRET!, {

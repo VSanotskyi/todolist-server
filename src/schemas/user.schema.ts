@@ -2,8 +2,8 @@ import Joi from 'joi';
 
 import { EMAIL_REGEX, PASSWORD_REGEX } from '../constants';
 
-const userSchema = Joi.object({
-  email: Joi.string().email().required().messages({
+export const userSchema = Joi.object({
+  email: Joi.string().regex(EMAIL_REGEX).required().messages({
     'string.email': 'Email must be a valid email address',
     'any.required': 'Email is required',
   }),

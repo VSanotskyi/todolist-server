@@ -1,7 +1,7 @@
 import { Router, Request, Response, NextFunction } from 'express';
 
-import { authRoute } from './auth.route.ts';
-import { ApiError } from '../errors/api.error.ts';
+import { authRoute } from './auth.route';
+import { ApiError } from '../errors/api.error';
 
 const router = Router();
 

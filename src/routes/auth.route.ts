@@ -1,8 +1,8 @@
 import { Router, Request, Response, NextFunction } from 'express';
 
-import { validateAuthBody } from '../middlewares/common.middleware.ts';
-import { AuthSchema } from '../schemas/AuthSchema.ts';
-import { authController } from '../controllers/auth.cntroller.ts';
+import { validateAuthBody } from '../middlewares/common.middleware';
+import { AuthSchema } from '../schemas/AuthSchema';
+import { authController } from '../controllers/auth.cntroller';
 
 const authRoute = Router();
 

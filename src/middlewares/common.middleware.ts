@@ -1,6 +1,7 @@
-import { ObjectSchema } from 'joi';
 import { Request, Response, NextFunction } from 'express';
-import { ApiError } from '../errors/api.error.ts';
+import { ObjectSchema } from 'joi';
+
+import { ApiError } from '../errors/api.error';
 
 const validateAuthBody = (validator: ObjectSchema) => {
   return async (req: Request, _res: Response, next: NextFunction) => {

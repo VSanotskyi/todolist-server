@@ -1,4 +1,4 @@
-import { HttpStatusCode, MessageEnum } from '../enums/enums.ts';
+import { HttpStatusCode, MessageEnum } from '../enums/enums';
 
 export class ApiError extends Error {
   public statusCode: number;

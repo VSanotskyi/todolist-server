@@ -4,10 +4,9 @@ import { MongoMemoryServer } from 'mongodb-memory-server';
 import { Server } from 'http';
 import bcrypt from 'bcrypt';
 
-import { server } from '../server';
+import { app } from '../main';
 import { User } from '../models/user.model';
 import { HttpStatusCode, MessageEnum, Status } from '../enums/enums';
-import { SuccessMessages } from '../constants/enum.ts';
 
 enum BASE_URL {
   SIGN_UP = '/app/auth/sign-up',
@@ -23,7 +22,7 @@ enum TEST_DATA {
 }
 
 let mongoServer: MongoMemoryServer;
-let app: Server;
+let server: Server;
 
 beforeAll(async () => {
   try {
@@ -39,7 +38,7 @@ beforeAll(async () => {
 
     // Create server instance
     return new Promise<void>((resolve) => {
-      app = server.listen(0, () => resolve());
+      server = app.listen(0, () => resolve());
     });
   } catch (error) {
     console.error('Failed to setup test environment:', error);
@@ -51,8 +50,8 @@ afterAll(async () => {
   try {
     await Promise.all([
       new Promise<void>((resolve) => {
-        if (app) {
-          app.close(() => resolve());
+        if (server) {
+          server.close(() => resolve());
         } else {
           resolve();
         }
@@ -193,7 +192,7 @@ describe('Auth API', () => {
     const makeSignUpRequest = (payload: SignInPayload) =>
       request(app).post(BASE_URL.SIGN_IN).send(payload);
 
-    it(`should return: ${HttpStatusCode.OK}, ${Status.SUCCESS}, ${SuccessMessages.LOGIN_SUCCESS}, user`, async () => {
+    it(`should return: ${HttpStatusCode.OK}, ${Status.SUCCESS}, ${MessageEnum.LOGGED_IN}, user`, async () => {
       const response = await makeSignUpRequest({
         email: TEST_DATA.TEST2,
         password: TEST_DATA.PASSWORD1,
@@ -203,13 +202,30 @@ describe('Auth API', () => {
       expect(response.body).toMatchObject({
         code: HttpStatusCode.OK,
         status: Status.SUCCESS,
-        message: SuccessMessages.LOGIN_SUCCESS,
+        message: MessageEnum.LOGGED_IN,
         user: {
           _id: expect.any(String),
           email: TEST_DATA.TEST2,
-          token: expect.any(String),
         },
       });
+
+      // Cookie validation
+      const cookies = response.headers['set-cookie'];
+      expect(cookies).toBeDefined();
+
+      // Ensure cookies is treated as string[]
+      const cookiesArray = Array.isArray(cookies) ? cookies : [cookies];
+      expect(cookiesArray.length).toBeGreaterThan(0);
+
+      const tokenCookie = cookiesArray.find((cookie: string) =>
+        cookie.startsWith('token='),
+      );
+      expect(tokenCookie).toBeDefined();
+
+      // Additional cookie security checks
+      expect(tokenCookie).toMatch(/HttpOnly/);
+      // expect(tokenCookie).toMatch(/Secure/); // todo
+      expect(tokenCookie).toMatch(/SameSite/);
     });
 
     it(`should return: ${HttpStatusCode.BAD_REQUEST}, ${Status.ERROR}, ${MessageEnum.INVALID_CREDENTIALS}`, async () => {

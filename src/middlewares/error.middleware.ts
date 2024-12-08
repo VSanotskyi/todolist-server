@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 
-import { ApiError } from '../errors/api.error.ts';
-import { HttpStatusCode, MessageEnum, Status } from '../enums/enums.ts';
+import { ApiError } from '../errors/api.error';
+import { HttpStatusCode, MessageEnum, Status } from '../enums/enums';
 
 export const errorMiddleware = (
   err: ApiError | Error,

@@ -1,7 +1,7 @@
 import Joi from 'joi';
 
-import { EMAIL_REGEX, PASSWORD_REGEX } from '../constants/index.ts';
-import { MessageEnum } from '../enums/enums.ts';
+import { EMAIL_REGEX, PASSWORD_REGEX } from '../constants';
+import { MessageEnum } from '../enums/enums';
 
 const AuthSchema = Joi.object({
   email: Joi.string().regex(EMAIL_REGEX).required().messages({
