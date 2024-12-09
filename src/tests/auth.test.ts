@@ -11,6 +11,7 @@ import { HttpStatusCode, MessageEnum, Status } from '../enums/enums';
 enum BASE_URL {
   SIGN_UP = '/app/auth/sign-up',
   SIGN_IN = '/app/auth/sign-in',
+  SIGN_OUT = '/app/auth/sign-out',
 }
 
 enum TEST_DATA {
@@ -296,4 +297,6 @@ describe('Auth API', () => {
       });
     });
   });
+
+  describe('GET /app/auth/sign-out', () => {});
 });

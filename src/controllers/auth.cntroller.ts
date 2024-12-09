@@ -5,6 +5,7 @@ import { authService } from '../services/auth.service';
 import { ctrlWrapper } from './ctrl.wrapper';
 import { ISignInReq, ISignUpReq } from '../interfaces/auth.interface';
 import { HttpStatusCode, MessageEnum, Status } from '../enums/enums';
+import { IUser } from '../interfaces/user.interface';
 
 const signUp = async (req: Request, res: Response, next: NextFunction) => {
   const body = req.body as ISignUpReq;
@@ -52,7 +53,26 @@ const signIn = async (req: Request, res: Response, next: NextFunction) => {
   });
 };
 
+const logout = async (req: Request, res: Response, next: NextFunction) => {
+  const user = req.body.user as IUser;
+
+  if (!user) {
+    return next(ApiError.unauthorized(MessageEnum.UNAUTHORIZED));
+  }
+
+  await authService.logout({ _id: user._id });
+
+  res.clearCookie('token');
+
+  res.status(200).json({
+    code: HttpStatusCode.OK,
+    status: Status.SUCCESS,
+    message: MessageEnum.LOGGED_OUT,
+  });
+};
+
 export const authController = {
   signUp: ctrlWrapper(signUp),
   signIn: ctrlWrapper(signIn),
+  logout: ctrlWrapper(logout),
 };

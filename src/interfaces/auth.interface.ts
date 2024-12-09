@@ -18,3 +18,7 @@ export interface ISignInRes {
   email: string;
   token: string;
 }
+
+export interface ILogoutReq {
+  _id: string;
+}

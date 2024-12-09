@@ -5,6 +5,7 @@ import {
 } from './password.service';
 import { userRepository } from '../repositories/user.repositorie';
 import {
+  ILogoutReq,
   ISignInReq,
   ISignInRes,
   ISignUpReq,
@@ -76,7 +77,12 @@ const signIn = async (dto: ISignInReq): Promise<ISignInRes> => {
   };
 };
 
+const logout = async (dto: ILogoutReq) => {
+  await userRepository.findUserAndUpdateToken(dto._id, { token: null });
+};
+
 export const authService = {
   signUp,
   signIn,
+  logout,
 };

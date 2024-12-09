@@ -6,6 +6,9 @@ import { IToken } from '../interfaces/token.interface';
 const getUserByEmail = async (email: string): Promise<IUser | null> =>
   await User.findOne({ email });
 
+const getById = async (_id: string): Promise<IUser | null> =>
+  await User.findById(_id);
+
 const createUser = async (dto: ISignUpReq): Promise<IUser> =>
   await User.create(dto);
 
@@ -16,4 +19,5 @@ export const userRepository = {
   createUser,
   getUserByEmail,
   findUserAndUpdateToken,
+  getById,
 };
