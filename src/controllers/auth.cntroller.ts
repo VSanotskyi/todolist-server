@@ -4,7 +4,7 @@ import { ApiError } from '../errors/api.error';
 import { authService } from '../services/auth.service';
 import { ctrlWrapper } from './ctrl.wrapper';
 import { ISignInReq, ISignUpReq } from '../interfaces/auth.interface';
-import { HttpStatusCode, MessageEnum, Status } from '../enums/enums';
+import { MessageEnum } from '../enums/enums';
 import { IUser } from '../interfaces/user.interface';
 
 const signUp = async (req: Request, res: Response, next: NextFunction) => {
@@ -19,8 +19,6 @@ const signUp = async (req: Request, res: Response, next: NextFunction) => {
   res.status(201).json({
     user,
     message: MessageEnum.USER_CREATED,
-    code: HttpStatusCode.CREATED,
-    status: Status.SUCCESS,
   });
 };
 
@@ -36,15 +34,13 @@ const signIn = async (req: Request, res: Response, next: NextFunction) => {
   res.cookie('token', user.token, {
     httpOnly: true,
     secure: false,
-    sameSite: 'none',
+    // todo for https
+    sameSite: 'lax',
     maxAge: 48 * 60 * 60 * 1000,
     path: '/',
-    partitioned: true,
   });
 
   res.status(200).json({
-    code: HttpStatusCode.OK,
-    status: Status.SUCCESS,
     message: MessageEnum.LOGGED_IN,
     user: {
       email: user.email,
@@ -65,8 +61,6 @@ const logout = async (req: Request, res: Response, next: NextFunction) => {
   res.clearCookie('token');
 
   res.status(200).json({
-    code: HttpStatusCode.OK,
-    status: Status.SUCCESS,
     message: MessageEnum.LOGGED_OUT,
   });
 };

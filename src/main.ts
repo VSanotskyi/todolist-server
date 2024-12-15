@@ -13,7 +13,13 @@ import { MessageEnum } from './enums/enums';
 
 export const app = express();
 
-app.use(cors());
+app.use(
+  cors({
+    origin: true,
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true,
+  }),
+);
 app.use(json());
 app.use(helmet());
 app.use(morgan('dev'));

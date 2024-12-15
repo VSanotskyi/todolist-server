@@ -6,7 +6,7 @@ import bcrypt from 'bcrypt';
 
 import { app } from '../main';
 import { User } from '../models/user.model';
-import { HttpStatusCode, MessageEnum, Status } from '../enums/enums';
+import { HttpStatusCode, MessageEnum } from '../enums/enums';
 
 enum BASE_URL {
   SIGN_UP = '/app/auth/sign-up',
@@ -96,7 +96,7 @@ describe('Auth API', () => {
     const makeSignUpRequest = (payload: SignUpPayload) =>
       request(app).post(BASE_URL.SIGN_UP).send(payload);
 
-    it(`should return: ${HttpStatusCode.CREATED}, ${Status.SUCCESS}, ${MessageEnum.USER_CREATED}, user`, async () => {
+    it(`should return: ${MessageEnum.USER_CREATED}`, async () => {
       const response = await makeSignUpRequest({
         email: TEST_DATA.TEST1,
         password: TEST_DATA.PASSWORD1,
@@ -104,8 +104,6 @@ describe('Auth API', () => {
 
       expect(response.status).toBe(HttpStatusCode.CREATED);
       expect(response.body).toMatchObject({
-        code: HttpStatusCode.CREATED,
-        status: Status.SUCCESS,
         message: MessageEnum.USER_CREATED,
         user: {
           _id: expect.any(String),
@@ -114,7 +112,7 @@ describe('Auth API', () => {
       });
     });
 
-    it(`should return: ${HttpStatusCode.BAD_REQUEST}, ${Status.ERROR}, ${MessageEnum.REQUIRED_PASSWORD}`, async () => {
+    it(`should return: ${MessageEnum.REQUIRED_PASSWORD}`, async () => {
       const response = await makeSignUpRequest({
         email: TEST_DATA.TEST2,
       });
@@ -122,25 +120,21 @@ describe('Auth API', () => {
       expect(response.status).toBe(HttpStatusCode.BAD_REQUEST);
       expect(response.body).toMatchObject({
         message: MessageEnum.REQUIRED_PASSWORD,
-        status: Status.ERROR,
-        code: HttpStatusCode.BAD_REQUEST,
       });
     });
 
-    it(`should return: ${HttpStatusCode.BAD_REQUEST}, ${Status.ERROR}, ${MessageEnum.REQUIRED_EMAIL}`, async () => {
+    it(`should return: ${MessageEnum.REQUIRED_EMAIL}`, async () => {
       const response = await makeSignUpRequest({
         password: TEST_DATA.PASSWORD2,
       });
 
       expect(response.status).toBe(HttpStatusCode.BAD_REQUEST);
       expect(response.body).toMatchObject({
-        code: HttpStatusCode.BAD_REQUEST,
         message: MessageEnum.REQUIRED_EMAIL,
-        status: Status.ERROR,
       });
     });
 
-    it(`should return: ${HttpStatusCode.BAD_REQUEST}, ${Status.ERROR}, ${MessageEnum.INVALID_EMAIL_FORMAT}`, async () => {
+    it(`should return: ${MessageEnum.INVALID_EMAIL_FORMAT}`, async () => {
       const response = makeSignUpRequest({
         email: TEST_DATA.TEST3,
         password: TEST_DATA.PASSWORD1,
@@ -150,12 +144,10 @@ describe('Auth API', () => {
       expect(res.status).toBe(HttpStatusCode.BAD_REQUEST);
       expect(res.body).toMatchObject({
         message: MessageEnum.INVALID_EMAIL_FORMAT,
-        status: Status.ERROR,
-        code: HttpStatusCode.BAD_REQUEST,
       });
     });
 
-    it(`should return: ${HttpStatusCode.BAD_REQUEST}, ${Status.ERROR}, ${MessageEnum.INVALID_PASSWORD_FORMAT}`, async () => {
+    it(`should return: ${MessageEnum.INVALID_PASSWORD_FORMAT}`, async () => {
       const response = makeSignUpRequest({
         email: TEST_DATA.TEST1,
         password: TEST_DATA.PASSWORD2,
@@ -165,12 +157,10 @@ describe('Auth API', () => {
       expect(res.status).toBe(HttpStatusCode.BAD_REQUEST);
       expect(res.body).toMatchObject({
         message: MessageEnum.INVALID_PASSWORD_FORMAT,
-        status: Status.ERROR,
-        code: HttpStatusCode.BAD_REQUEST,
       });
     });
 
-    it(`should return: ${HttpStatusCode.CONFLICT}, ${Status.ERROR}, ${MessageEnum.CONFLICT}`, async () => {
+    it(`should return: ${MessageEnum.CONFLICT}`, async () => {
       const response = await makeSignUpRequest({
         email: TEST_DATA.TEST2,
         password: TEST_DATA.PASSWORD1,
@@ -179,8 +169,6 @@ describe('Auth API', () => {
       expect(response.status).toBe(HttpStatusCode.CONFLICT);
       expect(response.body).toMatchObject({
         message: MessageEnum.CONFLICT,
-        status: Status.ERROR,
-        code: HttpStatusCode.CONFLICT,
       });
     });
   });
@@ -194,7 +182,7 @@ describe('Auth API', () => {
     const makeSignInRequest = (payload: SignInPayload) =>
       request(app).post(BASE_URL.SIGN_IN).send(payload);
 
-    it(`should return: ${HttpStatusCode.OK}, ${Status.SUCCESS}, ${MessageEnum.LOGGED_IN}, user`, async () => {
+    it(`should return: ${MessageEnum.LOGGED_IN}`, async () => {
       const response = await makeSignInRequest({
         email: TEST_DATA.TEST2,
         password: TEST_DATA.PASSWORD1,
@@ -202,8 +190,6 @@ describe('Auth API', () => {
 
       expect(response.status).toBe(HttpStatusCode.OK);
       expect(response.body).toMatchObject({
-        code: HttpStatusCode.OK,
-        status: Status.SUCCESS,
         message: MessageEnum.LOGGED_IN,
         user: {
           _id: expect.any(String),
@@ -230,7 +216,7 @@ describe('Auth API', () => {
       expect(tokenCookie).toMatch(/SameSite/);
     });
 
-    it(`should return: ${HttpStatusCode.BAD_REQUEST}, ${Status.ERROR}, ${MessageEnum.INVALID_CREDENTIALS}`, async () => {
+    it(`should return: ${MessageEnum.INVALID_CREDENTIALS}`, async () => {
       const response = await makeSignInRequest({
         email: TEST_DATA.TEST1,
         password: TEST_DATA.PASSWORD1,
@@ -239,12 +225,10 @@ describe('Auth API', () => {
       expect(response.status).toBe(HttpStatusCode.BAD_REQUEST);
       expect(response.body).toMatchObject({
         message: MessageEnum.INVALID_CREDENTIALS,
-        status: Status.ERROR,
-        code: HttpStatusCode.BAD_REQUEST,
       });
     });
 
-    it(`should return: ${HttpStatusCode.BAD_REQUEST}, ${Status.ERROR}, ${MessageEnum.INVALID_EMAIL_FORMAT}`, async () => {
+    it(`should return: ${MessageEnum.INVALID_EMAIL_FORMAT}`, async () => {
       const response = await makeSignInRequest({
         email: TEST_DATA.TEST3,
         password: TEST_DATA.PASSWORD1,
@@ -253,12 +237,10 @@ describe('Auth API', () => {
       expect(response.status).toBe(HttpStatusCode.BAD_REQUEST);
       expect(response.body).toMatchObject({
         message: MessageEnum.INVALID_EMAIL_FORMAT,
-        status: Status.ERROR,
-        code: HttpStatusCode.BAD_REQUEST,
       });
     });
 
-    it(`should return: ${HttpStatusCode.BAD_REQUEST}, ${Status.ERROR}, ${MessageEnum.INVALID_PASSWORD_FORMAT}`, async () => {
+    it(`should return: ${MessageEnum.INVALID_PASSWORD_FORMAT}`, async () => {
       const response = await makeSignInRequest({
         email: TEST_DATA.TEST2,
         password: TEST_DATA.PASSWORD2,
@@ -267,12 +249,10 @@ describe('Auth API', () => {
       expect(response.status).toBe(HttpStatusCode.BAD_REQUEST);
       expect(response.body).toMatchObject({
         message: MessageEnum.INVALID_PASSWORD_FORMAT,
-        status: Status.ERROR,
-        code: HttpStatusCode.BAD_REQUEST,
       });
     });
 
-    it(`should return:  ${HttpStatusCode.BAD_REQUEST}, ${Status.ERROR}, ${MessageEnum.REQUIRED_PASSWORD}`, async () => {
+    it(`should return: ${MessageEnum.REQUIRED_PASSWORD}`, async () => {
       const response = await makeSignInRequest({
         email: TEST_DATA.TEST2,
       });
@@ -280,21 +260,17 @@ describe('Auth API', () => {
       expect(response.status).toBe(HttpStatusCode.BAD_REQUEST);
       expect(response.body).toMatchObject({
         message: MessageEnum.REQUIRED_PASSWORD,
-        status: Status.ERROR,
-        code: HttpStatusCode.BAD_REQUEST,
       });
     });
 
-    it(`should return: ${HttpStatusCode.BAD_REQUEST}, ${Status.ERROR}, ${MessageEnum.REQUIRED_EMAIL}`, async () => {
+    it(`should return: ${MessageEnum.REQUIRED_EMAIL}`, async () => {
       const response = await makeSignInRequest({
         password: TEST_DATA.PASSWORD1,
       });
 
       expect(response.status).toBe(HttpStatusCode.BAD_REQUEST);
       expect(response.body).toMatchObject({
-        code: HttpStatusCode.BAD_REQUEST,
         message: MessageEnum.REQUIRED_EMAIL,
-        status: Status.ERROR,
       });
     });
   });
@@ -306,7 +282,7 @@ describe('Auth API', () => {
         password: TEST_DATA.PASSWORD1,
       });
 
-    it(`should return: ${HttpStatusCode.OK}, ${Status.SUCCESS}, ${MessageEnum.LOGGED_OUT}`, async () => {
+    it(`should return: ${MessageEnum.LOGGED_OUT}`, async () => {
       const signInResponse = await makeSignInRequest();
       const cookies = signInResponse.headers['set-cookie'];
 
@@ -316,32 +292,26 @@ describe('Auth API', () => {
 
       expect(response.status).toBe(HttpStatusCode.OK);
       expect(response.body).toMatchObject({
-        code: HttpStatusCode.OK,
-        status: Status.SUCCESS,
         message: MessageEnum.LOGGED_OUT,
       });
     });
 
-    it(`should return: ${HttpStatusCode.UNAUTHORIZED}, ${Status.ERROR}, ${MessageEnum.UNAUTHORIZED}`, async () => {
+    it(`should return: ${MessageEnum.UNAUTHORIZED}`, async () => {
       const response = await request(app).get(BASE_URL.SIGN_OUT);
 
       expect(response.status).toBe(HttpStatusCode.UNAUTHORIZED);
       expect(response.body).toMatchObject({
-        code: HttpStatusCode.UNAUTHORIZED,
-        status: Status.ERROR,
         message: MessageEnum.UNAUTHORIZED,
       });
     });
 
-    it(`should return: ${HttpStatusCode.UNAUTHORIZED}, ${Status.ERROR}, ${MessageEnum.UNAUTHORIZED}`, async () => {
+    it(`should return: ${HttpStatusCode.UNAUTHORIZED}, ${MessageEnum.UNAUTHORIZED}`, async () => {
       const response = await request(app)
         .get(BASE_URL.SIGN_OUT)
         .set('Cookie', TEST_DATA.TOKEN);
 
       expect(response.status).toBe(HttpStatusCode.UNAUTHORIZED);
       expect(response.body).toMatchObject({
-        code: HttpStatusCode.UNAUTHORIZED,
-        status: Status.ERROR,
         message: MessageEnum.UNAUTHORIZED,
       });
     });

@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 
 import { ApiError } from '../errors/api.error';
-import { HttpStatusCode, MessageEnum, Status } from '../enums/enums';
+import { HttpStatusCode, MessageEnum } from '../enums/enums';
 
 export const errorMiddleware = (
   err: ApiError | Error,
@@ -11,8 +11,6 @@ export const errorMiddleware = (
 ) => {
   if (err instanceof ApiError) {
     res.status(err.statusCode).json({
-      status: Status.ERROR,
-      code: err.statusCode,
       message: err.message,
     });
 
@@ -20,7 +18,6 @@ export const errorMiddleware = (
   }
 
   res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({
-    status: Status.ERROR,
     code: HttpStatusCode.INTERNAL_SERVER_ERROR,
     message: MessageEnum.INTERNAL_SERVER_ERROR,
   });
